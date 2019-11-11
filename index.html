@@ -1,0 +1,155 @@
+{% extends "bootstrap/base.html" %}
+
+{% block title %}Nelo Analytics{% endblock %}
+{% block head %}
+{{ super() }}
+<meta charset="UTF-8">
+{% endblock %}
+
+{% block content %}
+
+<div class="py-2">
+  <div class="container">
+    <div class="row">
+      <div class="col-md-12">
+        <h1 class="display-2">Nelo Analytics</h1>
+      </div>
+    </div>
+  </div>
+</div>
+<div class="mt-3 mb-1">
+  <div class="container">
+    <div class="row">
+      <div class="col-md-12">
+        <h1 class="mb-3">Sensor Device</h1>
+        <div class="input-group mb-3">
+          <div class="input-group-prepend">
+            <span class="input-group-text">Sensor IP</span>
+          </div>
+          <input type="text" id='sensor-ip' class="form-control" aria-label='' aria-describedby="basic-addon3" style="">
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+<div class="py-3">
+  <div class="container">
+    <div class="row">
+      <div class="col-12 col-md-12 btn-row">
+        <button class="btn-lg btn-success" id="connect-sensor" onclick="getDevices()">Connect To Sensor</button>
+        <button class="btn-lg btn-danger" id="start-collect" onclick="start()">Collect Data</button>
+      </div>
+    </div>
+  </div>
+</div>
+<div class="">
+  <div class="container">
+    <div class="row">
+      <div class="col-md-12">
+        <h1 class="">Sensor Control Painel</h1>
+      </div>
+    </div>
+  </div>
+</div>
+<div class="py-1">
+  <div class="container">
+    <div class="row">
+      <div class="col-12 col-md-12 btn-row">
+        <a class="btn-lg btn-success" class="start" onclick="start_serie()">Start Serie</a>
+        <a class="btn-lg btn-danger" class="stop"  onclick="stop_serie()">Stop Serie</a>
+      </div>
+    </div>
+  </div>
+
+</div>
+
+  <div id='myDiv'>
+
+  </div>
+</div>
+<script src="https://d14fo0winaifog.cloudfront.net/plotly-basic.js"></script>
+<script>
+function start() {
+   var ip = document.getElementById("sensor-ip").value
+
+    const url = 'http://' + ip + ':8000/start'
+    console.log(url)
+    fetch(url)
+    .then(response => response.text())
+    .then(json => {
+        console.log(json);
+    })
+}
+</script>
+<script>
+function start_serie() {
+   var ip = document.getElementById("sensor-ip").value
+
+    const url = 'http://' + ip + ':8000/start-data'
+    console.log(url)
+    fetch(url)
+    .then(response => response.text())
+    .then(json => {
+        console.log(json);
+    })
+}
+</script>
+<script>
+function stop_serie() {
+   var ip = document.getElementById("sensor-ip").value
+
+    const url = 'http://' + ip + ':8000/stop-data'
+    console.log(url)
+    fetch(url)
+    .then(response => response.text())
+    .then(json => {
+        console.log(json);
+    })
+}
+</script>
+<script>
+function data_serie() {
+   var ip = document.getElementById("sensor-ip").value
+
+    const url = 'http://' + ip + ':8000/serie-data'
+    console.log(url)
+    fetch(url)
+    .then(response => response.json())
+    .then(json => {
+      var trace1 = {
+      x: json.Time,
+      y: json.ax,
+      mode: 'lines'
+      };
+
+      var trace2 = {
+      x: json.Time,
+      y: json.pitch,
+      mode: 'lines'
+      };
+      var data = [ trace1, trace2 ];
+
+      var layout = {
+      title:'Line and Scatter Plot'
+      };
+
+      Plotly.newPlot('myDiv', data, layout);
+        console.log(json);
+    })
+}
+</script>
+
+<script>
+function getDevices() {
+    console.log('Heeelo')
+    const url = 'http://localhost:5000/getDevices'
+    fetch(url)
+    .then(response => response.text())
+    .then(json => {
+        console.log(json);
+        document.getElementById("sensor-ip").value = json
+    })
+}
+</script>
+
+{% endblock %}
